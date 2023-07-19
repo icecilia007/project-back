@@ -1,13 +1,10 @@
 package com.brzas.project.alternative.controller;
 
 import com.brzas.project.alternative.models.Alternative;
-import com.brzas.project.alternative.models.AlternativeDTO;
 import com.brzas.project.alternative.service.AlternativeService;
 import com.brzas.project.helpers.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,30 +33,27 @@ public class AlternativeController {
         return alternativeService.getAllAlternatives();
     }
     @PostMapping
-    public ResponseEntity<Object> createAlternative(@RequestBody AlternativeDTO alternativeDTO) {
-        Alternative novaAlternative = new Alternative();
-        novaAlternative.setDescription(alternativeDTO.getDescription());
-        novaAlternative.setOption(alternativeDTO.getOption());
+    public ResponseEntity<Object> createAlternative(@RequestBody Alternative alternative) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(alternativeService.createAlternative(novaAlternative));
+            return ResponseEntity.status(HttpStatus.CREATED).body(alternativeService.createAlternative(alternative));
         } catch (IllegalArgumentException ex) {
             ErrorResponse errorResponse =  new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(),"/api/v1/alternatives");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     @PutMapping("/")
-    public ResponseEntity<Object> updateAlternative(@RequestParam("id") long id, @RequestBody AlternativeDTO alternativeDTO) {
-        Alternative alternative = alternativeService.getAlternativeById(id);
+    public ResponseEntity<Object> updateAlternative(@RequestParam("id") long id, @RequestBody Alternative alternative) {
+        Alternative alternativeUpdate = alternativeService.getAlternativeById(id);
 
-        if (alternative == null) {
+        if (alternativeUpdate == null) {
             return ResponseEntity.notFound().build();
         }
 
         try {
-            alternative.setDescription(alternativeDTO.getDescription());
-            alternative.setOption(alternativeDTO.getOption());
+            alternativeUpdate.setDescription(alternativeUpdate.getDescription());
+            alternativeUpdate.setOption(alternativeUpdate.getOption());
 
-            return ResponseEntity.ok().body(alternativeService.updateAlternative(alternative));
+            return ResponseEntity.ok().body(alternativeService.updateAlternative(alternativeUpdate));
         } catch (IllegalArgumentException ex) {
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "/api/v1/alternatives/" + id);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
